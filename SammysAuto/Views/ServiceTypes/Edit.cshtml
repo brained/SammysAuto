@@ -1,0 +1,30 @@
+﻿@model SammysAuto.Models.ServiceType
+@{
+    ViewData["Title"] = "Edit";
+}
+<br />
+<h2>Edit Service Type</h2>
+<hr />
+
+<form asp-action="Edit" method="post">
+  <div class="form-border">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+      <div class="row">
+        <div class="col-sm-1">
+          <label asp-for="Name" class="custom-label"></label>
+        </div>
+        <div class="col-sm-4">
+          <input asp-for="Name" class="form-control" />
+        </div>
+        <span asp-validation-for="Name" class="text-danger"></span>
+      </div>
+    </div>
+    <br />
+    <div class="form-group">
+      <input type="submit" class="btn btn-sm btn-primary" value="Update"/>
+      <a asp-action="Index" class="btn btn-sm btn-success">Back to list</a>
+    </div>
+  </div>
+</form>
