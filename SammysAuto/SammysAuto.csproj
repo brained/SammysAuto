@@ -5,6 +5,11 @@
     <UserSecretsId>aspnet-SammysAuto-C4178DDC-B7FC-49A0-B382-6F485816F653</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Data\Migrations\20180219013146_add.cs" />
+    <Compile Remove="Data\Migrations\20180219013146_add.Designer.cs" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
