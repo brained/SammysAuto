@@ -4,7 +4,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SammysAuto.Data;
+using SammysAuto.Models;
 using SammysAuto.ViewModel;
 
 namespace SammysAuto.Controllers
@@ -20,7 +22,7 @@ namespace SammysAuto.Controllers
 
     public async Task<IActionResult> Index(string userId = null)
     {
-      if(userId == null)
+      if (userId == null)
       {
         //only called when a customer user logs in
         userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -34,6 +36,130 @@ namespace SammysAuto.Controllers
 
       return View(model);
     }
+
+    //Create GET
+    public IActionResult Create(string userid)
+    {
+      Car carObj = new Car
+      {
+        Year = DateTime.Now.Year,
+        UserId = userid
+      };
+
+      return View(carObj);
+    }
+
+    //Create POSt
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(Car car)
+    {
+      if(ModelState.IsValid)
+      {
+        _db.Add(car);
+        await _db.SaveChangesAsync();
+        return RedirectToAction(nameof(Index), new { userId = car.UserId });
+      }
+      else
+      {
+        return View(car);
+      }
+    }
+    //Details GET
+    public async Task<IActionResult> Details(int? id)
+    {
+      if (id == null)
+      {
+        return NotFound();
+      }
+
+      var car = await _db.Cars
+        .Include(c => c.ApplicationUser)
+        .SingleOrDefaultAsync(m => m.Id == id);
+
+      if(car == null)
+      {
+        return NotFound();
+      }
+
+      return View(car);
+    }
+
+    //Edit Get
+    public async Task<IActionResult> Edit(int? id)
+    {
+      if (id == null)
+      {
+        return NotFound();
+      }
+
+      var car = await _db.Cars
+        .Include(c => c.ApplicationUser)
+        .SingleOrDefaultAsync(m => m.Id == id);
+
+      if (car == null)
+      {
+        return NotFound();
+      }
+
+      return View(car);
+    }
+
+    //EDIT POST
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, Car car)
+    {
+      if (id != car.Id)
+      {
+        return NotFound();
+      }
+
+      if(ModelState.IsValid)
+      {
+        _db.Update(car);
+        await _db.SaveChangesAsync();
+        return RedirectToAction(nameof(Index), new { userId = car.UserId });
+      }
+
+      return View(car);
+    }
+
+    //Delete Get
+    public async Task<IActionResult> Delete(int? id)
+    {
+      if (id == null)
+      {
+        return NotFound();
+      }
+
+      var car = await _db.Cars
+        .Include(c => c.ApplicationUser)
+        .SingleOrDefaultAsync(m => m.Id == id);
+
+      if (car == null)
+      {
+        return NotFound();
+      }
+
+      return View(car);
+    }
+
+    //Delete POST
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+      var car = await _db.Cars.SingleOrDefaultAsync(c => c.Id == id);
+      if(car == null)
+      {
+        return NotFound();
+      }
+      _db.Cars.Remove(car);
+      await _db.SaveChangesAsync();
+      return RedirectToAction(nameof(Index), new { userId = car.UserId });
+    }
+
 
     protected override void Dispose(bool disposing)
     {
